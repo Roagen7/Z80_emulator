@@ -28,6 +28,7 @@ namespace emulator::cpu {
 
         memory::Memory ram{};
         uint8_t arg{};
+        uint16_t argWord{};
         uint16_t addr{};
         bool run{true};
 
@@ -39,9 +40,12 @@ namespace emulator::cpu {
         Z80();
 
 
-
+        //BYTE
         static void imm(), imp();
-        static void lda(), nop();
+        //WORD
+        static void immWord();
+
+        static void nop(), lda(), ldbc(), ldb();
 
     };
 

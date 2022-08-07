@@ -11,4 +11,10 @@ namespace emulator::cpu {
         Instance().registers.PC += 1;
     }
 
+    void Z80::immWord() {
+        Instance().argWord = Instance().ram[Instance().registers.PC + 1]
+                + Instance().ram[Instance().registers.PC+2] * 256;
+        Instance().registers.PC += 3;
+    }
+
 }
