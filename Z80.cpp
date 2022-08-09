@@ -42,12 +42,17 @@ namespace emulator::cpu {
 
     void Z80::Tick() {
 
-        auto opc = Instance().ram[Instance().registers.PC];
-        auto& instr = Instance().lookup[opc];
-
-        instr.addressingMode();
-        instr.opcode();
-
+        if(Instance().cycles == 0){
+            auto opc = Instance().ram[Instance().registers.PC];
+            Instance().instruction = Instance().lookup[opc];
+            Instance().instruction.addressingMode();
+            Instance().cycles++;
+        } else if(Instance().cycles < Instance().instruction.cycles){
+            Instance().cycles++;
+        } else {
+            Instance().instruction.opcode();
+            Instance().cycles = 0;
+        }
     }
 
     void Z80::Reset() {
@@ -58,6 +63,17 @@ namespace emulator::cpu {
         return Instance().run;
     }
 
+    bool Z80::statusGet(const Z80::FlagBit& bit) const {
+        return (registers.F & (uint8_t) bit) > 0;
+    }
+
+    void Z80::statusSet(const Z80::FlagBit& bit, bool value) {
+
+        if(value)
+            registers.F |= (uint8_t)bit;
+        else
+            registers.F &= ~(uint8_t)bit;
+    }
 }
 
 

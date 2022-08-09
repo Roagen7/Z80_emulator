@@ -14,10 +14,9 @@ int main() {
     Z80::Reset();
     Z80::Load("../a.out");
     auto& ins = Z80::Instance();
-    while(Z80::Run()){
 
+    while(Z80::Run())
         Z80::Tick();
-    }
 
     return 0;
 }
