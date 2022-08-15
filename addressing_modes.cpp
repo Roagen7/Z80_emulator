@@ -3,8 +3,8 @@
 namespace emulator::cpu {
 
     void Z80::imm() {
-        Instance().arg = Instance().ram[Instance().registers.PC + 1];
-        Instance().registers.PC += 2;
+        Instance().arg = Instance().ram[PC_ + 1];
+        PC_ += 2;
     }
 
     void Z80::imp(){
@@ -12,9 +12,13 @@ namespace emulator::cpu {
     }
 
     void Z80::immWord() {
-        Instance().argWord = Instance().ram[Instance().registers.PC + 1]
-                + Instance().ram[Instance().registers.PC+2] * 256;
-        Instance().registers.PC += 3;
+        Instance().argWord = Instance().ram[PC_ + 1]
+                + Instance().ram[PC_+2] * 256;
+        PC_ += 3;
+    }
+
+    void Z80::ind() {
+        PC_ += 1;
     }
 
 }

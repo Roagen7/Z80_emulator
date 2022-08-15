@@ -3,7 +3,6 @@
 namespace emulator::cpu {
 
     Z80 &Z80::Instance() {
-
         static Z80 instance;
 
         return instance;
@@ -73,6 +72,48 @@ namespace emulator::cpu {
             registers.F |= (uint8_t)bit;
         else
             registers.F &= ~(uint8_t)bit;
+    }
+
+    void Z80::inc(uint8_t& reg) {
+        Instance().statusSet(Z80::FlagBit::N, false);
+        Instance().statusSet(Z80::FlagBit::PV, Z80::IsOverflowAdd(reg, 1));
+        Instance().statusSet(Z80::FlagBit::H, Z80::IsHalfCarryAdd(reg,1));
+        Instance().statusSet(Z80::FlagBit::Z, (reg + 1) == 0x00);
+        Instance().statusSet(Z80::FlagBit::S, (bool) ((reg + 1) & 0x80));
+        reg++;
+    }
+
+    void Z80::dec(uint8_t &reg) {
+        Instance().statusSet(Z80::FlagBit::N, true);
+        Instance().statusSet(Z80::FlagBit::PV, Z80::IsOverflowSub(reg, 1u));
+        Instance().statusSet(Z80::FlagBit::H, Z80::IsHalfCarrySub(reg,1u));
+        Instance().statusSet(Z80::FlagBit::Z, (reg - 1) == 0x00);
+        Instance().statusSet(Z80::FlagBit::S, (bool) ((reg - 1) & 0x80));
+        reg--;
+    }
+
+    bool Z80::IsOverflowAdd(uint8_t x, uint8_t y) {
+        uint8_t sign_x = x & 0x80;
+        uint8_t sign_y = y & 0x80;
+        uint8_t sign_addxy = (x+y) & 0x80;
+
+        return (!(sign_x ^ sign_y)) & (sign_x ^ sign_addxy);
+    }
+
+    bool Z80::IsOverflowSub(uint8_t x, uint8_t y) {
+        uint8_t sign_x = x & 0x80;
+        uint8_t sign_y = y & 0x80;
+        uint8_t sign_addxy = (x-y) & 0x80;
+
+        return (!(sign_x ^ sign_y)) & (sign_x ^ sign_addxy);
+    }
+
+    bool Z80::IsHalfCarryAdd(uint8_t x, uint8_t y) {
+        return ((x&0xf) + (y&0xf) & 0x10) == 0x10;
+    }
+
+    bool Z80::IsHalfCarrySub(uint8_t x, uint8_t y) {
+        return ((x&0xf) - (y&0xf) & 0x10) == 0x10;
     }
 }
 
